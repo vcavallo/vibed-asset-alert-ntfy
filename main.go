@@ -83,7 +83,7 @@ func main() {
 				log.Printf("Sending alert: %s - %s", alert.Ticker, alert.Message)
 			}
 
-			if err := sender.SendAlert(alert.Ticker, alert.Name, alert.Message, alert.Price); err != nil {
+			if err := sender.SendAlert(alert.Ticker, alert.Name, alert.Message); err != nil {
 				log.Printf("Failed to send alert for %s: %v", alert.Ticker, err)
 			} else {
 				fmt.Printf("✓ Alert sent: %s - %s\n", alert.Name, alert.Message)
@@ -92,7 +92,7 @@ func main() {
 	} else if len(triggered) > 0 && *dryRun {
 		fmt.Println("Dry run - would send the following alerts:")
 		for _, alert := range triggered {
-			fmt.Printf("  • %s: %s (price: $%.2f)\n", alert.Name, alert.Message, alert.Price)
+			fmt.Printf("  • %s: %s\n", alert.Name, alert.Message)
 		}
 	} else if *verbose {
 		log.Println("No alerts triggered")

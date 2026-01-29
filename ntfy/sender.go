@@ -91,17 +91,14 @@ func (s *Sender) addAuth(req *http.Request) {
 }
 
 // SendAlert sends an alert notification with appropriate formatting
-func (s *Sender) SendAlert(ticker, name, message string, price float64) error {
+func (s *Sender) SendAlert(ticker, name, message string) error {
 	title := fmt.Sprintf("💰 %s Alert", name)
 	if name == "" {
 		title = fmt.Sprintf("💰 %s Alert", ticker)
 	}
 
-	// Add price to message if not already included
-	fullMessage := fmt.Sprintf("%s\n\nCurrent price: $%.2f", message, price)
-
 	// Use emoji tags for visual identification
 	tags := []string{"chart_with_upwards_trend", ticker}
 
-	return s.Send(title, fullMessage, tags)
+	return s.Send(title, message, tags)
 }

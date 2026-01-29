@@ -226,7 +226,14 @@ func (e *Evaluator) formatMessage(alert config.AlertConfig, cond config.Conditio
 		name = alert.Ticker
 	}
 
-	return fmt.Sprintf("%s is %s $%.2f (currently $%.2f)", name, direction, cond.Value, price)
+	verb := "crossed"
+	if direction == "below" {
+		verb = "dropped"
+	} else if direction == "above" {
+		verb = "rose"
+	}
+
+	return fmt.Sprintf("%s %s %s $%.2f (currently $%.2f)", name, verb, direction, cond.Value, price)
 }
 
 func (e *Evaluator) formatPercentMessage(alert config.AlertConfig, cond config.ConditionConfig, price float64, change float64, direction string) string {
