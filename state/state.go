@@ -46,6 +46,11 @@ func Load(path string) (*State, error) {
 		return nil, fmt.Errorf("reading state file: %w", err)
 	}
 
+	// Handle empty file
+	if len(data) == 0 {
+		return s, nil
+	}
+
 	if err := json.Unmarshal(data, s); err != nil {
 		return nil, fmt.Errorf("parsing state file: %w", err)
 	}

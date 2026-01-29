@@ -24,8 +24,5 @@ RUN apk --no-cache add ca-certificates
 # Copy binary from builder
 COPY --from=builder /app/asset-alerts .
 
-# Default config location
-VOLUME ["/app/config"]
-
 ENTRYPOINT ["./asset-alerts"]
-CMD ["--config", "/app/config/config.yaml"]
+CMD ["--config", "/app/config.yaml"]

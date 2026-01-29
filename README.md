@@ -139,8 +139,34 @@ Add to your crontab (`crontab -e`):
 ### Docker
 
 ```bash
-docker run -v $(pwd)/config.yaml:/app/config.yaml -v $(pwd)/state.json:/app/state.json asset-alerts
+# Build the image
+docker build -t asset-alerts .
+
+# Create state file (required before first run)
+echo '{}' > state.json
+
+# Run once
+docker run --rm \
+  -v $(pwd)/config.yaml:/app/config.yaml \
+  -v $(pwd)/state.json:/app/state.json \
+  asset-alerts
+
+# Run with verbose output
+docker run --rm \
+  -v $(pwd)/config.yaml:/app/config.yaml \
+  -v $(pwd)/state.json:/app/state.json \
+  asset-alerts --config /app/config.yaml -v
 ```
+
+### Docker with Cron
+
+Add to your crontab (`crontab -e`):
+
+```bash
+*/5 * * * * docker run --rm -v /path/to/config.yaml:/app/config.yaml -v /path/to/state.json:/app/state.json asset-alerts
+```
+
+Use absolute paths in crontab (not `$(pwd)`).
 
 ## State Management
 
