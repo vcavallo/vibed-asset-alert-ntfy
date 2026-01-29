@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./asset-alerts:*)"
+      "Bash(./asset-alerts:*)",
+      "WebSearch"
     ]
   }
 }

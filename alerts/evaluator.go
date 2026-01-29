@@ -57,6 +57,8 @@ func (e *Evaluator) evaluateCondition(alert config.AlertConfig, cond config.Cond
 		return e.evaluateBelow(alert, cond, quote)
 	case "percent_change":
 		return e.evaluatePercentChange(alert, cond, quote)
+	case "absolute_change":
+		return e.evaluateAbsoluteChange(alert, cond, quote)
 	}
 	return nil
 }
@@ -170,6 +172,50 @@ func (e *Evaluator) evaluatePercentChange(alert config.AlertConfig, cond config.
 	return nil
 }
 
+func (e *Evaluator) evaluateAbsoluteChange(alert config.AlertConfig, cond config.ConditionConfig, quote *yahoo.Quote) *TriggeredAlert {
+	duration, err := parseDuration(cond.Period)
+	if err != nil {
+		return nil
+	}
+
+	histPrice, ok := e.state.GetPriceAtTime(alert.Ticker, duration)
+	if !ok {
+		// Not enough history yet
+		return nil
+	}
+
+	// Calculate absolute change
+	absoluteChange := quote.Price - histPrice
+	absChange := math.Abs(absoluteChange)
+
+	key := state.AlertKey(alert.Ticker, "absolute_change", cond.Value)
+	alreadyTriggered := e.state.IsAlertTriggered(key)
+
+	if absChange >= cond.Value {
+		if !alreadyTriggered {
+			e.state.SetAlertTriggered(key, true)
+			direction := "up"
+			if absoluteChange < 0 {
+				direction = "down"
+			}
+			return &TriggeredAlert{
+				Ticker:    alert.Ticker,
+				Name:      alert.Name,
+				Condition: cond,
+				Price:     quote.Price,
+				Message:   e.formatAbsoluteMessage(alert, cond, quote.Price, absoluteChange, direction),
+			}
+		}
+	} else {
+		// Reset if change has decreased below threshold
+		if alreadyTriggered {
+			e.state.SetAlertTriggered(key, false)
+		}
+	}
+
+	return nil
+}
+
 func (e *Evaluator) formatMessage(alert config.AlertConfig, cond config.ConditionConfig, price float64, direction string) string {
 	if cond.Message != "" {
 		return cond.Message
@@ -194,6 +240,19 @@ func (e *Evaluator) formatPercentMessage(alert config.AlertConfig, cond config.C
 	}
 
 	return fmt.Sprintf("%s moved %.1f%% %s in %s (currently $%.2f)", name, math.Abs(change), direction, cond.Period, price)
+}
+
+func (e *Evaluator) formatAbsoluteMessage(alert config.AlertConfig, cond config.ConditionConfig, price float64, change float64, direction string) string {
+	if cond.Message != "" {
+		return cond.Message
+	}
+
+	name := alert.Name
+	if name == "" {
+		name = alert.Ticker
+	}
+
+	return fmt.Sprintf("%s moved $%.2f %s in %s (currently $%.2f)", name, math.Abs(change), direction, cond.Period, price)
 }
 
 // parseDuration converts period strings like "24h", "1h", "7d" to time.Duration

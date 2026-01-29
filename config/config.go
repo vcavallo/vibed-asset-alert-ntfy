@@ -117,21 +117,22 @@ func (c *Config) Validate() error {
 
 func validateCondition(c ConditionConfig) error {
 	validTypes := map[string]bool{
-		"above":          true,
-		"below":          true,
-		"percent_change": true,
+		"above":           true,
+		"below":           true,
+		"percent_change":  true,
+		"absolute_change": true,
 	}
 
 	if !validTypes[c.Type] {
-		return fmt.Errorf("invalid type %q (must be above, below, or percent_change)", c.Type)
+		return fmt.Errorf("invalid type %q (must be above, below, percent_change, or absolute_change)", c.Type)
 	}
 
 	if c.Value <= 0 {
 		return fmt.Errorf("value must be positive")
 	}
 
-	if c.Type == "percent_change" && c.Period == "" {
-		return fmt.Errorf("period is required for percent_change conditions")
+	if (c.Type == "percent_change" || c.Type == "absolute_change") && c.Period == "" {
+		return fmt.Errorf("period is required for %s conditions", c.Type)
 	}
 
 	return nil
