@@ -1,0 +1,17 @@
+# Binary
+asset-alerts
+
+# State file (contains runtime data)
+state.json
+
+# Config with real credentials
+config.yaml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store

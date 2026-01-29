@@ -1,0 +1,71 @@
+ntfy:
+  server: "https://your-ntfy-server.com"  # your self-hosted instance
+  topic: "asset-alerts"
+  # Authentication (all optional, use what your server requires)
+  username: "your-username"
+  password: "your-password"
+  # OR use access token instead of username/password:
+  # token: "tk_your_access_token"
+  # Optional: priority (1-5, default 3)
+  priority: 3
+
+# Reference for cron setup (not used by the application)
+check_interval: "*/5 * * * *"
+
+alerts:
+  # Multiple conditions on the same ticker
+  - ticker: "BTC-USD"
+    name: "Bitcoin"
+    conditions:
+      - type: "above"
+        value: 100000
+        message: "BTC crossed $100k!"
+      - type: "below"
+        value: 90000
+        message: "BTC dropped below $90k"
+      - type: "percent_change"
+        value: 5  # 5% change
+        period: "24h"
+        message: "BTC moved 5% in 24h"
+
+  # You can also have multiple entries for the same ticker
+  # Useful for organizing different alert "groups"
+  - ticker: "BTC-USD"
+    name: "Bitcoin DCA levels"
+    conditions:
+      - type: "below"
+        value: 80000
+        message: "BTC at $80k - DCA level 1"
+      - type: "below"
+        value: 70000
+        message: "BTC at $70k - DCA level 2"
+      - type: "below"
+        value: 60000
+        message: "BTC at $60k - DCA level 3"
+
+  - ticker: "ETH-USD"
+    name: "Ethereum"
+    conditions:
+      - type: "above"
+        value: 4000
+        message: "ETH above $4k!"
+      - type: "below"
+        value: 3000
+        message: "ETH dropped below $3k"
+
+  - ticker: "AAPL"
+    name: "Apple"
+    conditions:
+      - type: "above"
+        value: 200
+      - type: "below"
+        value: 150
+
+  - ticker: "MSFT"
+    name: "Microsoft"
+    conditions:
+      - type: "above"
+        value: 450
+      - type: "percent_change"
+        value: 3
+        period: "24h"
