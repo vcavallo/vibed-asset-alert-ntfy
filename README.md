@@ -9,6 +9,7 @@ A self-hosted Go application that monitors asset prices (stocks + crypto) via Ya
   - Price above threshold
   - Price below threshold
   - Percent change over time period
+  - Absolute dollar change over time period
 - **ntfy notifications:** Supports self-hosted ntfy servers with authentication
 - **Smart alerting:** Prevents duplicate alerts with hysteresis (alerts reset when price crosses back)
 - **Cron-friendly:** Runs as a single binary, checks prices, sends alerts, exits
@@ -69,6 +70,14 @@ alerts:
         period: "24h"
         message: "BTC moved 5% in 24h"
 
+  - ticker: "SI=F"
+    name: "Silver"
+    conditions:
+      - type: "absolute_change"
+        value: 10
+        period: "24h"
+        # Auto-generates: "Silver moved $10.50 up in 24h (currently $125.64)"
+
   - ticker: "AAPL"
     name: "Apple"
     conditions:
@@ -85,6 +94,9 @@ alerts:
 | `above` | Triggers when price goes above threshold | `value` (price) |
 | `below` | Triggers when price goes below threshold | `value` (price) |
 | `percent_change` | Triggers when price changes by X% | `value` (percentage), `period` (e.g., "24h", "1h") |
+| `absolute_change` | Triggers when price changes by $X | `value` (dollar amount), `period` (e.g., "24h", "1h") |
+
+For `above`/`below` alerts, you can set both on the same value to get notified when price crosses in either direction.
 
 ### ntfy Authentication
 
@@ -146,7 +158,7 @@ This prevents duplicate alerts and enables smart threshold crossing detection.
 2. Fetch current prices from Yahoo Finance for all configured tickers
 3. For each alert condition:
    - **Threshold alerts:** Check if price crossed the threshold since last check. Only alert once per crossing.
-   - **Percent change:** Compare to historical price from the specified period. Alert if change exceeds threshold.
+   - **Percent/absolute change:** Compare to historical price from the specified period. Alert if change exceeds threshold.
 4. Send ntfy notifications for triggered alerts
 5. Update state file
 6. Exit

@@ -69,3 +69,12 @@ alerts:
       - type: "percent_change"
         value: 3
         period: "24h"
+
+  # Absolute dollar change alert
+  - ticker: "SI=F"
+    name: "Silver"
+    conditions:
+      - type: "absolute_change"
+        value: 10  # $10 move
+        period: "24h"
+        # Auto-generates message like: "Silver moved $10.50 up in 24h (currently $125.64)"
