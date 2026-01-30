@@ -100,15 +100,24 @@ func (c *Client) GetQuote(ticker string) (*Quote, error) {
 }
 
 // GetQuotes fetches prices for multiple tickers
+// Continues on individual failures, only returns error if all tickers fail
 func (c *Client) GetQuotes(tickers []string) (map[string]*Quote, error) {
 	quotes := make(map[string]*Quote)
+	var lastErr error
 
 	for _, ticker := range tickers {
 		quote, err := c.GetQuote(ticker)
 		if err != nil {
-			return nil, fmt.Errorf("fetching %s: %w", ticker, err)
+			lastErr = fmt.Errorf("fetching %s: %w", ticker, err)
+			// Log but continue with other tickers
+			fmt.Printf("Warning: failed to fetch %s: %v\n", ticker, err)
+			continue
 		}
 		quotes[ticker] = quote
+	}
+
+	if len(quotes) == 0 && lastErr != nil {
+		return nil, fmt.Errorf("all tickers failed, last error: %w", lastErr)
 	}
 
 	return quotes, nil
