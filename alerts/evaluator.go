@@ -218,7 +218,7 @@ func (e *Evaluator) evaluateAbsoluteChange(alert config.AlertConfig, cond config
 
 func (e *Evaluator) formatMessage(alert config.AlertConfig, cond config.ConditionConfig, price float64, direction string) string {
 	if cond.Message != "" {
-		return cond.Message
+		return fmt.Sprintf("%s (currently $%.2f)", cond.Message, price)
 	}
 
 	name := alert.Name
@@ -238,7 +238,7 @@ func (e *Evaluator) formatMessage(alert config.AlertConfig, cond config.Conditio
 
 func (e *Evaluator) formatPercentMessage(alert config.AlertConfig, cond config.ConditionConfig, price float64, change float64, direction string) string {
 	if cond.Message != "" {
-		return cond.Message
+		return fmt.Sprintf("%s (%s, currently $%.2f)", cond.Message, direction, price)
 	}
 
 	name := alert.Name
@@ -251,7 +251,7 @@ func (e *Evaluator) formatPercentMessage(alert config.AlertConfig, cond config.C
 
 func (e *Evaluator) formatAbsoluteMessage(alert config.AlertConfig, cond config.ConditionConfig, price float64, change float64, direction string) string {
 	if cond.Message != "" {
-		return cond.Message
+		return fmt.Sprintf("%s (%s, currently $%.2f)", cond.Message, direction, price)
 	}
 
 	name := alert.Name
